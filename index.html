@@ -5,88 +5,106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Spese">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Le mie spese</title>
 <style>
-:root{--bg:#f2f3f7;--card:#fff;--tx:#14161c;--mu:#7a8094;--line:#e6e8ef;--out:#ef4b5f;--in:#1fb67a;--sav:#4a7cff;
+:root{--bg:#fff;--card:#fff;--soft:#f4f4f6;--ac:#111;--onac:#fff;--tx:#111;--mu:#8a8f9c;--line:#ececf0;--out:#e5484d;--in:#2a9d6f;--sav:#8a8f9c;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1015;--card:#1a1d26;--tx:#f1f2f6;--mu:#8b91a5;--line:#272b37}}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#000;--soft:#1a1a1d;--ac:#f5f5f7;--onac:#111;--tx:#f5f5f7;--mu:#8e8e96;--line:#232326}}
 *{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:480px;margin:0 auto;padding:20px 16px 40px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:480px;margin:0 auto;padding:20px 16px 110px}
+header{margin-bottom:14px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.filt{display:flex;gap:10px;margin-bottom:12px}
 .sel{position:relative}
-select{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:999px;padding:10px 36px 10px 16px;font-size:15px;font-weight:600;font-family:inherit}
+select{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:999px;padding:10px 34px 10px 16px;font-size:15px;font-weight:600;font-family:inherit}
 .sel::after{content:"▾";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--mu);pointer-events:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:8px 13px;font-size:13.5px;font-weight:600;font-family:inherit}
+.chip.on{background:var(--ac);border-color:var(--ac);color:var(--onac)}
 .tot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
-.box{background:var(--card);border-radius:22px;padding:16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
 .box small{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:13px;font-weight:600}
 .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;color:#fff}
-.box b{display:block;margin-top:12px;font-size:22px;font-weight:800;letter-spacing:-.5px}
+.box b{display:block;margin-top:12px;font-size:22px;font-weight:700;letter-spacing:-.5px}
 .out .dot{background:var(--out)}.out b{color:var(--out)}
 .in .dot{background:var(--in)}.in b{color:var(--in)}
+.sal{grid-column:1/-1}.sal .dot{background:var(--sav)}
+.pos{color:var(--in)}.neg{color:var(--out)}
 h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex;justify-content:space-between}
 .day{font-size:13px;color:var(--mu);font-weight:700;margin:16px 4px 8px;text-transform:capitalize}
-.list{background:var(--card);border-radius:22px;overflow:hidden}
-.tx{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line)}
+.day.gh{display:flex;justify-content:space-between;text-transform:none;font-size:14px}
+.list{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.tx{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);cursor:pointer}
 .tx:last-child{border-bottom:0}
-.ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:var(--bg);flex:none}
+.ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:19px;background:var(--soft);filter:grayscale(1);flex:none}
 .d{flex:1;min-width:0}
 .d div{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .d span{font-size:12.5px;color:var(--mu)}
 .am{font-weight:700;font-size:15px;white-space:nowrap}
 .SPESA{color:var(--out)}.ENTRATA{color:var(--in)}.RISPARMI{color:var(--sav)}
 .msg{text-align:center;color:var(--mu);padding:40px 0}
-.tx{cursor:pointer}
-.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;border:0;background:var(--sav);color:#fff;font-size:30px;box-shadow:0 6px 18px rgba(74,124,255,.45)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
-.ov.on{display:flex}
-.sh{background:var(--card);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
-.sh h3{font-size:18px;margin-bottom:14px}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg);padding:4px;border-radius:14px;margin-bottom:6px}
-.seg button{border:0;background:none;color:var(--mu);padding:10px;border-radius:11px;font-weight:700;font-size:14px;font-family:inherit}
-.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.sh label{display:block;font-size:12px;color:var(--mu);font-weight:700;margin:10px 2px 6px}
-.sh input,.sh select{width:100%;background:var(--bg);color:var(--tx);border:0;border-radius:14px;padding:13px 14px;font-size:16px;font-family:inherit}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.act{display:flex;gap:10px;margin-top:18px}
-.act button{flex:1;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:700;font-family:inherit}
-#salva{background:var(--sav);color:#fff}#annulla{background:var(--bg);color:var(--tx)}
-#err{color:var(--out);font-size:13px;margin-top:10px;min-height:1em}
-body{padding-bottom:110px}
-.fab{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--card);border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:10}
-.nav button{flex:1;max-width:240px;border:0;background:none;color:var(--mu);font-size:11px;font-weight:700;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px}
-.nav button span{font-size:22px}
-.nav button.on{color:var(--sav)}
-.filt{display:flex;gap:10px;margin-bottom:6px}
-#rep h2{margin-top:22px}
+#rep h2,#ann h2{margin-top:22px}
 .ri{display:flex;gap:12px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--line)}
 .ri:last-child{border:0}
 .rb{flex:1;min-width:0}
 .rt{display:flex;justify-content:space-between;font-size:15px}
 .rt span{font-weight:700}
 .rb small{color:var(--mu);font-size:12.5px}
-.bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin:7px 0 5px}
+.bar{height:6px;background:var(--soft);border-radius:99px;overflow:hidden;margin:7px 0 5px}
 .bar i{display:block;height:100%;border-radius:99px}
 .bar i.o{background:var(--out)}.bar i.g{background:var(--in)}
+.pv{width:100%;border-collapse:collapse;font-size:14px}
+.pv th,.pv td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line)}
+.pv th:first-child,.pv td:first-child{text-align:left}
+.pv thead th{color:var(--mu);font-size:12px}
+.pv tbody tr:last-child td{border-bottom:1px solid var(--line)}
+.pv tfoot th{border-bottom:0}
+.gl{stroke:var(--line)}.zl{stroke:var(--mu)}
+.ax{fill:var(--mu);font-size:10px}
+.bo{fill:var(--out)}.bg{fill:var(--in)}
+.ln{stroke:var(--tx);fill:none;stroke-width:2.2;stroke-linejoin:round}.dt{fill:var(--tx);stroke:var(--card);stroke-width:1.5}
+.leg{display:flex;gap:14px;justify-content:center;font-size:12px;color:var(--mu);margin-top:6px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--card);border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:10}
+.nav button{flex:1;max-width:160px;border:0;background:none;color:var(--mu);font-size:10px;font-weight:600;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--tx)}
+.fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.fab svg{width:24px;height:24px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.ov.on{display:flex}
+.sh{background:var(--card);border-top:1px solid var(--line);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
+.sh h3{font-size:18px;margin-bottom:14px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--soft);padding:4px;border-radius:14px;margin-bottom:6px}
+.seg button{border:0;background:none;color:var(--mu);padding:10px;border-radius:11px;font-weight:700;font-size:14px;font-family:inherit}
+.seg button.on{background:var(--ac);color:var(--onac)}
+.sh label{display:block;font-size:12px;color:var(--mu);font-weight:700;margin:10px 2px 6px}
+.sh input,.sh select{width:100%;background:var(--soft);color:var(--tx);border:0;border-radius:14px;padding:13px 14px;font-size:16px;font-family:inherit}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{display:flex;gap:10px;margin-top:18px}
+.act button{flex:1;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:700;font-family:inherit}
+#salva{background:var(--ac);color:var(--onac)}#annulla{background:var(--soft);color:var(--tx)}
 #elimina{background:rgba(239,75,95,.14);color:var(--out);display:none}
+#err{color:var(--out);font-size:13px;margin-top:10px;min-height:1em}
 </style>
 </head>
 <body>
 <div id="pHome">
-<header>
-  <h1>Spese</h1>
-  <div class="sel"><select id="mese" aria-label="Mese"></select></div>
-</header>
-<section class="tot">
-  <div class="box out"><small><span class="dot">↑</span>Totale spesa</small><b id="tOut">€ 0,00</b></div>
-  <div class="box in"><small><span class="dot">↓</span>Totale entrata</small><b id="tIn">€ 0,00</b></div>
-</section>
-<h2><span>Transazioni</span><span id="n"></span></h2>
-<div id="lista"><div class="msg">Caricamento…</div></div>
- 
+  <header><h1>Spese</h1></header>
+  <div class="filt">
+    <div class="sel"><select id="hAnno" aria-label="Anno"></select></div>
+    <div class="sel"><select id="mese" aria-label="Mese"></select></div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <section class="tot">
+    <div class="box out"><small>Totale spesa</small><b id="tOut">€ 0,00</b></div>
+    <div class="box in"><small>Totale entrata</small><b id="tIn">€ 0,00</b></div>
+    <div class="box sal"><small>Saldo</small><b id="tSal">€ 0,00</b></div>
+  </section>
+  <h2><span>Transazioni</span><span id="n"></span></h2>
+  <div id="lista"><div class="msg">Caricamento…</div></div>
 </div>
+
 <div id="pRep" hidden>
   <header><h1>Report</h1></header>
   <div class="filt">
@@ -95,12 +113,22 @@ body{padding-bottom:110px}
   </div>
   <div id="rep"></div>
 </div>
+
+<div id="pAnn" hidden>
+  <header><h1>Annuale</h1></header>
+  <div class="filt"><div class="sel"><select id="aAnno" aria-label="Anno"></select></div></div>
+  <div id="ann"></div>
+</div>
+
 <p style="text-align:center;margin-top:28px;font-size:13px"><a href="#" id="cfgLink" style="color:var(--mu)">Collegamento allo script</a></p>
+
 <nav class="nav">
-  <button class="on" data-p="pHome"><span>🏠</span>Home</button>
-  <button data-p="pRep"><span>📊</span>Report</button>
+  <button class="on" data-p="pHome" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button data-p="pRep" aria-label="Report"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Report</button>
+  <button data-p="pAnn" aria-label="Annuale"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Annuale</button>
 </nav>
-<button class="fab" id="fab" aria-label="Aggiungi transazione">+</button>
+<button class="fab" id="fab" aria-label="Aggiungi transazione"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+
 <div class="ov" id="ov"><div class="sh">
   <h3 id="ft">Nuova transazione</h3>
   <div class="seg" id="seg"><button data-t="SPESA">Spesa</button><button data-t="ENTRATA">Entrata</button><button data-t="RISPARMI">Risparmi</button></div>
@@ -113,22 +141,20 @@ body{padding-bottom:110px}
   <div id="err"></div>
   <div class="act"><button id="elimina">Elimina</button><button id="annulla">Annulla</button><button id="salva">Salva</button></div>
 </div></div>
- 
+
 <div class="ov" id="cfgOv"><div class="sh">
   <h3>Collega la tua app</h3>
   <label for="cUrl">URL dello script (finisce con /exec)</label><input id="cUrl" type="url" autocapitalize="off" autocorrect="off">
   <label for="cKey">Password</label><input id="cKey" type="password" autocapitalize="off" autocorrect="off">
   <div id="cErr" style="color:var(--out);font-size:13px;margin-top:10px;min-height:1em"></div>
-  <div class="act"><button id="cfgSalva" style="background:var(--sav);color:#fff">Collega</button></div>
+  <div class="act"><button id="cfgSalva" style="background:var(--ac);color:var(--onac)">Collega</button></div>
 </div></div>
- 
+
 <script>
-// ===== CONFIGURAZIONE =====
-let SCRIPT_URL = ""; // non va scritto qui: lo inserisci al primo avvio e resta solo su questo dispositivo
-let TOKEN = "";      // idem: la password si inserisce al primo avvio
- 
+let SCRIPT_URL = "", TOKEN = "";  // si inseriscono al primo avvio e restano solo su questo dispositivo
 const cfgSaved = (() => { try { return JSON.parse(localStorage.getItem("spese_cfg")||"null"); } catch(e){ return null; } })();
 if(cfgSaved){ SCRIPT_URL = cfgSaved.url; TOKEN = cfgSaved.key; }
+
 const TIPO_ENTRATA = "ENTRATA"; // come lo scrivi nel foglio: ENTRATA oppure ENTRATE
 const CAT = {
   SPESA:["Spese Fisse","Ristorante","Uscite","Shopping","Trasporti","Hobby","Casa","Regali","Vacanza","Salute"],
@@ -137,74 +163,182 @@ const CAT = {
 };
 const MESI = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
 const ICONE = {"spese fisse":"📌",ristorante:"🍝",uscite:"🍻",shopping:"🛍️",trasporti:"🚇",hobby:"🎨",casa:"🏠",regali:"🎁",vacanza:"🏖️",salute:"💊",stipendio:"💼","altre entrate":"💰"};
+const $ = id => document.getElementById(id);
 const eur = n => n.toLocaleString("it-IT",{style:"currency",currency:"EUR"});
+const eur0 = n => n.toLocaleString("it-IT",{maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
 const isIn = t => t.tipo.startsWith("ENTRAT");
 const tipoCls = t => isIn(t) ? "ENTRATA" : t.tipo;
-let dati = [];
- 
-function chiave(t){
-  const m = parseInt(t.mese,10);
-  if(!m || !t.anno) return null;
-  return t.anno + "-" + String(m).padStart(2,"0");
-}
-function label(k){
-  const [a,m] = k.split("-");
-  const n = MESI[+m-1];
-  return n.charAt(0).toUpperCase()+n.slice(1)+" "+a;
-}
- 
+const mn = t => parseInt(t.mese,10);
+const pct = v => (v>=10 ? v.toFixed(0) : v.toFixed(1)).replace(".",",")+"%";
+const sgn = n => (n>0?"+":n<0?"−":"")+eur(Math.abs(n));
+const icona = c => ICONE[String(c).toLowerCase()]||"💳";
+let dati = [], A = 0, M = 0;
+const C = new Set();
+
 async function carica(){
   const url = SCRIPT_URL + (TOKEN ? "?token="+encodeURIComponent(TOKEN) : "");
-  const r = await fetch(url);
-  const j = await r.json();
+  const j = await (await fetch(url)).json();
   if(!Array.isArray(j)) throw new Error(j.error || "Risposta non valida");
-  dati = j.filter(t=>chiave(t));
+  dati = j.filter(t=>mn(t)>0 && t.anno);
 }
- 
+
+// ===== HOME =====
+function selHome(){
+  const anni = [...new Set(dati.map(t=>t.anno))].sort((a,b)=>b-a);
+  $("hAnno").innerHTML = anni.map(a=>'<option>'+a+'</option>').join("");
+  $("hAnno").value = A;
+  const ms = [...new Set(dati.filter(t=>t.anno===A).map(mn))].sort((a,b)=>a-b);
+  $("mese").innerHTML = '<option value="0">Tutto l’anno</option>'+ms.map(m=>'<option value="'+m+'">'+cap(MESI[m-1])+'</option>').join("");
+  $("mese").value = M;
+}
+function riga(t, sub){
+  const seg = isIn(t) ? "+" : t.tipo==="SPESA" ? "−" : "";
+  return '<div class="tx" data-id="'+t.id+'"><div class="ic">'+icona(t.categoria)+'</div><div class="d"><div>'+esc(t.descrizione||t.categoria)+'</div><span>'+esc(sub)+'</span></div><div class="am '+tipoCls(t)+'">'+seg+eur(t.importo)+'</div></div>';
+}
 function render(){
-  const k = document.getElementById("mese").value;
-  const tx = dati.filter(t=>chiave(t)===k).sort((a,b)=>b.ts.localeCompare(a.ts));
-  const somma = f => tx.filter(f).reduce((s,t)=>s+t.importo,0);
-  document.getElementById("tOut").textContent = eur(somma(t=>t.tipo==="SPESA"));
-  document.getElementById("tIn").textContent = eur(somma(isIn));
-  document.getElementById("n").textContent = tx.length + " voci";
-  const box = document.getElementById("lista");
-  if(!tx.length){ box.innerHTML = '<div class="msg">Nessuna transazione in questo mese</div>'; return; }
-  let html = "", cur = null;
-  for(const t of tx){
-    const g = t.ts.slice(0,10);
-    if(g!==cur){
-      if(cur!==null) html += "</div>";
-      cur = g;
-      const d = new Date(g+"T12:00");
-      html += '<div class="day">'+(isNaN(d)?esc(g):d.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}))+'</div><div class="list">';
+  const per = dati.filter(t=>t.anno===A && (!M||mn(t)===M));
+  const cats = [...new Set(per.map(t=>t.categoria))].sort();
+  [...C].forEach(c=>{ if(!cats.includes(c)) C.delete(c); });
+  $("chips").innerHTML = cats.map(c=>'<button class="chip'+(C.has(c)?' on':'')+'" data-c="'+esc(c)+'">'+icona(c)+' '+esc(c||"Senza categoria")+'</button>').join("");
+  const tx = per.filter(t=>!C.size||C.has(t.categoria)).sort((a,b)=>b.ts.localeCompare(a.ts));
+  const s = f => tx.filter(f).reduce((x,t)=>x+t.importo,0);
+  const sp = s(t=>t.tipo==="SPESA"), en = s(isIn), sd = en-sp;
+  $("tOut").textContent = eur(sp);
+  $("tIn").textContent = eur(en);
+  $("tSal").textContent = sgn(sd);
+  $("tSal").className = sd<0 ? "neg" : sd>0 ? "pos" : "";
+  $("n").textContent = tx.length+" voci";
+  const box = $("lista");
+  if(!tx.length){ box.innerHTML = '<div class="msg">Nessuna transazione</div>'; return; }
+  let html = "";
+  if(C.size){
+    const g = {};
+    tx.forEach(t=>(g[t.categoria] = g[t.categoria]||[]).push(t));
+    for(const c of Object.keys(g).sort()){
+      const net = g[c].reduce((x,t)=>x+(isIn(t)?t.importo:t.tipo==="SPESA"?-t.importo:0),0);
+      html += '<div class="day gh"><span>'+icona(c)+' '+esc(c||"Senza categoria")+'</span><span class="'+(net<0?"neg":"pos")+'">'+sgn(net)+'</span></div><div class="list">'
+        + g[c].map(t=>{ const d = new Date(t.ts.slice(0,10)+"T12:00"); return riga(t, isNaN(d)?"":d.toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"})); }).join("")+'</div>';
     }
-    const seg = isIn(t) ? "+" : t.tipo==="SPESA" ? "−" : "";
-    html += '<div class="tx" data-id="'+t.id+'"><div class="ic">'+(ICONE[t.categoria.toLowerCase()]||"💳")+'</div>'
-      +'<div class="d"><div>'+esc(t.descrizione||t.categoria)+'</div><span>'+esc(t.categoria)+'</span></div>'
-      +'<div class="am '+tipoCls(t)+'">'+seg+eur(t.importo)+'</div></div>';
+  } else {
+    let cur = null;
+    for(const t of tx){
+      const g = t.ts.slice(0,10);
+      if(g!==cur){
+        if(cur!==null) html += "</div>";
+        cur = g;
+        const d = new Date(g+"T12:00");
+        html += '<div class="day">'+(isNaN(d)?esc(g):d.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}))+'</div><div class="list">';
+      }
+      html += riga(t, t.categoria);
+    }
+    html += "</div>";
   }
-  box.innerHTML = html + "</div>";
+  box.innerHTML = html;
 }
- 
-const $ = id => document.getElementById(id);
- 
 async function popola(forza){
   await carica();
-  const mesi = [...new Set(dati.map(chiave))].sort().reverse();
-  const sel = $("mese"), prev = forza || sel.value;
-  sel.innerHTML = mesi.map(m=>'<option value="'+m+'">'+label(m)+'</option>').join("");
-  const now = new Date(), cur = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
-  sel.value = mesi.includes(prev) ? prev : (mesi.includes(cur) ? cur : mesi[0]);
-  render();
-  popolaReport();
+  const anni = [...new Set(dati.map(t=>t.anno))].sort((a,b)=>b-a);
+  if(forza){ A = +forza.slice(0,4); M = +forza.slice(5); C.clear(); }
+  else if(!A || !anni.includes(A)){
+    const n = new Date();
+    A = anni.includes(n.getFullYear()) ? n.getFullYear() : (anni[0]||0);
+    M = dati.some(t=>t.anno===A&&mn(t)===n.getMonth()+1) ? n.getMonth()+1 : 0;
+  }
+  if(M && !dati.some(t=>t.anno===A&&mn(t)===M)) M = 0;
+  selHome(); render(); popolaReport(); popolaAnnuale();
 }
- 
-// ----- aggiunta / modifica -----
+
+// ===== REPORT (percentuali per categoria) =====
+let repInit = false;
+const aggrCat = (tx,f) => {
+  const o = {};
+  tx.filter(f).forEach(t=>{ o[t.categoria] = (o[t.categoria]||0)+t.importo; });
+  return Object.entries(o).map(([c,v])=>({c,v})).sort((x,y)=>y.v-x.v);
+};
+function popolaReport(){
+  const anni = [...new Set(dati.map(t=>t.anno))].sort((a,b)=>b-a);
+  const sa = $("rAnno"), sm = $("rMese"), pa = sa.value, pm = sm.value;
+  sa.innerHTML = anni.map(a=>'<option>'+a+'</option>').join("");
+  sm.innerHTML = '<option value="0">Tutto l’anno</option>'+MESI.map((n,i)=>'<option value="'+(i+1)+'">'+cap(n)+'</option>').join("");
+  if(!repInit){ sa.value = A; sm.value = M; repInit = true; } else { sa.value = pa; sm.value = pm; }
+  if(!sa.value && anni.length) sa.value = anni[0];
+  rendiReport();
+}
+function blocco(titolo, voci, cls){
+  const tot = voci.reduce((s,v)=>s+v.v,0);
+  let h = '<h2><span>'+titolo+'</span><span>'+eur(tot)+'</span></h2>';
+  if(!tot) return h+'<div class="msg" style="padding:16px 0 24px">Nessun dato</div>';
+  h += '<div class="list">';
+  for(const v of voci){
+    const p = v.v/tot*100;
+    h += '<div class="ri"><div class="ic">'+icona(v.c)+'</div><div class="rb"><div class="rt"><b>'+esc(v.c||"Senza categoria")+'</b><span>'+pct(p)+'</span></div><div class="bar"><i class="'+cls+'" style="width:'+p.toFixed(1)+'%"></i></div><small>'+eur(v.v)+'</small></div></div>';
+  }
+  return h+'</div>';
+}
+function rendiReport(){
+  const a = Number($("rAnno").value), m = Number($("rMese").value);
+  const tx = dati.filter(t=>t.anno===a && (!m || mn(t)===m));
+  $("rep").innerHTML = blocco("Spese per categoria", aggrCat(tx,t=>t.tipo==="SPESA"), "o") + blocco("Entrate per categoria", aggrCat(tx,isIn), "g");
+}
+
+// ===== ANNUALE (pivot + grafico) =====
+function popolaAnnuale(){
+  const anni = [...new Set(dati.map(t=>t.anno))].sort((a,b)=>b-a);
+  const s = $("aAnno"), p = s.value;
+  s.innerHTML = anni.map(a=>'<option>'+a+'</option>').join("");
+  s.value = p && anni.includes(+p) ? p : A;
+  if(!s.value && anni.length) s.value = anni[0];
+  rendiAnnuale();
+}
+function pivot(titolo, voci){
+  const tot = voci.reduce((s,v)=>s+v.v,0);
+  let h = '<h2><span>'+titolo+'</span></h2>';
+  if(!tot) return h+'<div class="msg" style="padding:16px 0 24px">Nessun dato</div>';
+  h += '<div class="list"><table class="pv"><thead><tr><th>Categoria</th><th>Importo</th><th>%</th></tr></thead><tbody>';
+  voci.forEach(v=>{ h += '<tr><td>'+esc(v.c||"Senza categoria")+'</td><td>'+eur(v.v)+'</td><td>'+pct(v.v/tot*100)+'</td></tr>'; });
+  return h+'</tbody><tfoot><tr><th>Totale</th><th>'+eur(tot)+'</th><th>100%</th></tr></tfoot></table></div>';
+}
+function grafico(en, sp){
+  const W=340, H=210, L=44, R=8, T=12, B=26, pw=W-L-R, ph=H-T-B;
+  const net = en.map((v,i)=>v-sp[i]);
+  const top = Math.max(1, ...en.map((v,i)=>v+sp[i])), bot = Math.min(0, ...net);
+  const y = v => T+ph*(1-(v-bot)/(top-bot)), x = i => L+pw/12*(i+.5), bw = pw/12*.62;
+  const ab = v => Math.abs(v)>=1000 ? (v/1000).toFixed(1).replace(".0","").replace(".",",")+"k" : String(Math.round(v));
+  let g = "";
+  for(let k=0;k<=4;k++){ const v = bot+(top-bot)*k/4; g += '<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v).toFixed(1)+'" y2="'+y(v).toFixed(1)+'"/><text class="ax" x="'+(L-6)+'" y="'+(y(v)+3.5).toFixed(1)+'" text-anchor="end">'+ab(v)+'</text>'; }
+  g += '<line class="zl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(0).toFixed(1)+'" y2="'+y(0).toFixed(1)+'"/>';
+  for(let i=0;i<12;i++){
+    const x0 = (x(i)-bw/2).toFixed(1);
+    if(sp[i]>0) g += '<rect class="bo" x="'+x0+'" y="'+y(sp[i]).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(y(0)-y(sp[i])).toFixed(1)+'" rx="2"/>';
+    if(en[i]>0) g += '<rect class="bg" x="'+x0+'" y="'+y(sp[i]+en[i]).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(y(sp[i])-y(sp[i]+en[i])).toFixed(1)+'" rx="2"/>';
+    g += '<text class="ax" x="'+x(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+MESI[i].charAt(0).toUpperCase()+'</text>';
+  }
+  g += '<polyline class="ln" points="'+net.map((v,i)=>x(i).toFixed(1)+","+y(v).toFixed(1)).join(" ")+'"/>';
+  net.forEach((v,i)=>{ g += '<circle class="dt" cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="3"/>'; });
+  return '<div class="box" style="padding:12px 10px"><svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Spese, entrate e netto per mese">'+g+'</svg>'
+    +'<div class="leg"><span><i style="background:var(--in)"></i>Entrate</span><span><i style="background:var(--out)"></i>Spese</span><span><i style="background:var(--tx)"></i>Netto</span></div></div>';
+}
+function rendiAnnuale(){
+  const a = Number($("aAnno").value), tx = dati.filter(t=>t.anno===a);
+  const en = Array(12).fill(0), sp = Array(12).fill(0);
+  tx.forEach(t=>{ const i = mn(t)-1; if(i<0||i>11) return; if(isIn(t)) en[i]+=t.importo; else if(t.tipo==="SPESA") sp[i]+=t.importo; });
+  let tab = '<div class="list" style="margin-top:14px"><table class="pv"><thead><tr><th>Mese</th><th>Entrate</th><th>Spese</th><th>Netto</th></tr></thead><tbody>';
+  for(let i=0;i<12;i++){
+    const n = en[i]-sp[i], vuoto = !en[i] && !sp[i];
+    tab += '<tr><td>'+cap(MESI[i]).slice(0,3)+'</td><td>'+(vuoto?"–":eur0(en[i]))+'</td><td>'+(vuoto?"–":eur0(sp[i]))+'</td><td class="'+(n<0?"neg":n>0?"pos":"")+'">'+(vuoto?"–":eur0(n))+'</td></tr>';
+  }
+  const TE = en.reduce((x,y)=>x+y,0), TS = sp.reduce((x,y)=>x+y,0), TN = TE-TS;
+  tab += '</tbody><tfoot><tr><th>Anno</th><th>'+eur0(TE)+'</th><th>'+eur0(TS)+'</th><th class="'+(TN<0?"neg":TN>0?"pos":"")+'">'+eur0(TN)+'</th></tr></tfoot></table></div>';
+  $("ann").innerHTML = pivot("Spese per categoria", aggrCat(tx,t=>t.tipo==="SPESA"))
+    + pivot("Entrate per categoria", aggrCat(tx,isIn))
+    + '<h2><span>Andamento mensile</span></h2>' + grafico(en,sp) + tab;
+}
+
+// ===== FORM: aggiunta / modifica / elimina =====
 let fTipo = "SPESA", fId = null, fTs = null;
 const oggi = () => new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
- 
 function setTipo(t, cat){
   fTipo = t;
   document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
@@ -226,108 +360,65 @@ function apri(t){
   $("elimina").style.display = t ? "block" : "none";
   $("ov").classList.add("on");
 }
+const post = body => fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({token:TOKEN},body))}).then(r=>r.json());
 async function salva(){
   const imp = parseFloat($("fImp").value.replace(",","."));
-  if(!(imp>0)) { $("err").textContent = "Inserisci un importo valido"; return; }
-  if(!$("fData").value) { $("err").textContent = "Scegli una data"; return; }
+  if(!(imp>0)){ $("err").textContent = "Inserisci un importo valido"; return; }
+  if(!$("fData").value){ $("err").textContent = "Scegli una data"; return; }
   const btn = $("salva"); btn.disabled = true; btn.textContent = "Salvo…";
   try{
-    const r = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({
-      action: fId ? "update" : "add", token: TOKEN, id: fId, ts: fTs,
-      data:{tipo: fTipo==="ENTRATA" ? TIPO_ENTRATA : fTipo, importo: imp, descrizione: $("fDesc").value.trim(), categoria: $("fCat").value, data: $("fData").value}
-    })});
-    const j = await r.json();
+    const j = await post({action: fId?"update":"add", id:fId, ts:fTs,
+      data:{tipo: fTipo==="ENTRATA"?TIPO_ENTRATA:fTipo, importo:imp, descrizione:$("fDesc").value.trim(), categoria:$("fCat").value, data:$("fData").value}});
     if(!j.ok) throw new Error(j.error || "Errore sconosciuto");
     $("ov").classList.remove("on");
-    await popola($("fData").value.slice(0,7));
+    const d = $("fData").value, m = +d.slice(5,7), g = +d.slice(8,10);
+    // stessa regola dello script: dal 26 in poi si va nel mese successivo
+    let y = +d.slice(0,4), mm = g>=26 ? m+1 : m; if(mm>12){ mm = 1; y++; }
+    await popola(y+"-"+String(mm).padStart(2,"0"));
   }catch(e){ $("err").textContent = "Non salvato: "+e.message; }
   btn.disabled = false; btn.textContent = "Salva";
 }
- 
-$("fab").onclick = () => apri(null);
-$("annulla").onclick = () => $("ov").classList.remove("on");
-$("ov").onclick = e => { if(e.target.id==="ov") $("ov").classList.remove("on"); };
-$("seg").onclick = e => { const b = e.target.closest("button"); if(b) setTipo(b.dataset.t); };
-$("salva").onclick = salva;
-$("mese").onchange = render;
-$("lista").onclick = e => {
-  const r = e.target.closest(".tx"); if(!r) return;
-  const t = dati.find(x=>String(x.id)===r.dataset.id); if(t) apri(t);
-};
- 
-// ----- elimina -----
 $("elimina").onclick = async () => {
   if(!fId || !confirm("Eliminare questa transazione?")) return;
   const btn = $("elimina"); btn.disabled = true; btn.textContent = "Elimino…";
   try{
-    const r = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"delete",token:TOKEN,id:fId,ts:fTs})});
-    const j = await r.json();
+    const j = await post({action:"delete", id:fId, ts:fTs});
     if(!j.ok) throw new Error(j.error || "Errore sconosciuto");
     $("ov").classList.remove("on");
     await popola();
   }catch(e){ $("err").textContent = "Non eliminato: "+e.message; }
   btn.disabled = false; btn.textContent = "Elimina";
 };
- 
-// ----- report -----
-let repInit = false;
-const pct = v => (v>=10 ? v.toFixed(0) : v.toFixed(1)).replace(".",",")+"%";
-function popolaReport(){
-  const anni = [...new Set(dati.map(t=>t.anno))].sort((a,b)=>b-a);
-  const sa = $("rAnno"), sm = $("rMese"), pa = sa.value, pm = sm.value;
-  sa.innerHTML = anni.map(a=>'<option value="'+a+'">'+a+'</option>').join("");
-  sm.innerHTML = '<option value="0">Tutto l\'anno</option>'+MESI.map((n,i)=>'<option value="'+(i+1)+'">'+n.charAt(0).toUpperCase()+n.slice(1)+'</option>').join("");
-  if(!repInit){
-    const k = $("mese").value;
-    if(k){ sa.value = k.slice(0,4); sm.value = String(parseInt(k.slice(5),10)); }
-    repInit = true;
-  } else { sa.value = pa; sm.value = pm; }
-  if(!sa.value && anni.length) sa.value = anni[0];
-  rendiReport();
-}
-function blocco(titolo, voci, cls){
-  const tot = voci.reduce((s,v)=>s+v.v,0);
-  let h = '<h2><span>'+titolo+'</span><span>'+eur(tot)+'</span></h2>';
-  if(!tot) return h+'<div class="msg" style="padding:16px 0 24px">Nessun dato</div>';
-  h += '<div class="list">';
-  for(const v of voci){
-    const p = v.v/tot*100;
-    h += '<div class="ri"><div class="ic">'+(ICONE[v.c.toLowerCase()]||"💳")+'</div><div class="rb"><div class="rt"><b>'+esc(v.c||"Senza categoria")+'</b><span>'+pct(p)+'</span></div><div class="bar"><i class="'+cls+'" style="width:'+p.toFixed(1)+'%"></i></div><small>'+eur(v.v)+'</small></div></div>';
-  }
-  return h+'</div>';
-}
-function rendiReport(){
-  const a = Number($("rAnno").value), m = Number($("rMese").value);
-  const tx = dati.filter(t=>t.anno===a && (!m || parseInt(t.mese,10)===m));
-  const aggr = f => {
-    const o = {};
-    tx.filter(f).forEach(t=>{ o[t.categoria] = (o[t.categoria]||0)+t.importo; });
-    return Object.entries(o).map(([c,v])=>({c,v})).sort((x,y)=>y.v-x.v);
-  };
-  $("rep").innerHTML = blocco("Spese per categoria", aggr(t=>t.tipo==="SPESA"), "o") + blocco("Entrate per categoria", aggr(isIn), "g");
-}
+
+// ===== eventi =====
+$("fab").onclick = () => apri(null);
+$("annulla").onclick = () => $("ov").classList.remove("on");
+$("ov").onclick = e => { if(e.target.id==="ov") $("ov").classList.remove("on"); };
+$("seg").onclick = e => { const b = e.target.closest("button"); if(b) setTipo(b.dataset.t); };
+$("salva").onclick = salva;
+$("hAnno").onchange = () => { A = +$("hAnno").value; C.clear(); if(!dati.some(t=>t.anno===A&&mn(t)===M)) M = 0; selHome(); render(); };
+$("mese").onchange = () => { M = +$("mese").value; render(); };
+$("chips").onclick = e => { const b = e.target.closest(".chip"); if(!b) return; const c = b.dataset.c; C.has(c) ? C.delete(c) : C.add(c); render(); };
+$("lista").onclick = e => { const r = e.target.closest(".tx"); if(!r) return; const t = dati.find(x=>String(x.id)===r.dataset.id); if(t) apri(t); };
 $("rAnno").onchange = rendiReport;
 $("rMese").onchange = rendiReport;
- 
-// ----- barra di navigazione -----
+$("aAnno").onchange = rendiAnnuale;
 document.querySelectorAll(".nav button").forEach(b => b.onclick = () => {
   document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("on", x===b));
-  const rp = b.dataset.p === "pRep";
-  $("pHome").hidden = rp; $("pRep").hidden = !rp;
-  $("fab").style.display = rp ? "none" : "";
-  if(rp) popolaReport();
+  ["pHome","pRep","pAnn"].forEach(id=>{ $(id).hidden = id!==b.dataset.p; });
+  $("fab").style.display = b.dataset.p==="pHome" ? "" : "none";
+  if(b.dataset.p==="pRep") popolaReport();
+  if(b.dataset.p==="pAnn") popolaAnnuale();
   window.scrollTo(0,0);
 });
- 
+
 function avvia(){
   if(!SCRIPT_URL){ $("cfgOv").classList.add("on"); return; }
-  popola().catch(e=>{
-    $("lista").innerHTML = '<div class="msg">Impossibile caricare i dati.<br>'+esc(e.message)+'</div>';
-  });
+  popola().catch(e=>{ $("lista").innerHTML = '<div class="msg">Impossibile caricare i dati.<br>'+esc(e.message)+'</div>'; });
 }
 $("cfgSalva").onclick = () => {
   const u = $("cUrl").value.trim(), k = $("cKey").value.trim();
-  if(!/^https:\/\/.+\/exec$/.test(u)){ $("cErr").textContent = "L'URL deve iniziare con https:// e finire con /exec"; return; }
+  if(!/^https:\/\/.+\/exec$/.test(u)){ $("cErr").textContent = "L’URL deve iniziare con https:// e finire con /exec"; return; }
   if(!k){ $("cErr").textContent = "Inserisci la password"; return; }
   SCRIPT_URL = u; TOKEN = k;
   try{ localStorage.setItem("spese_cfg", JSON.stringify({url:u,key:k})); }catch(e){}
@@ -339,4 +430,3 @@ avvia();
 </script>
 </body>
 </html>
- 
