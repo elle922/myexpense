@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Spese">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Le mie spese</title>
+<style>
+:root{--bg:#f2f3f7;--card:#fff;--tx:#14161c;--mu:#7a8094;--line:#e6e8ef;--out:#ef4b5f;--in:#1fb67a;--sav:#4a7cff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1015;--card:#1a1d26;--tx:#f1f2f6;--mu:#8b91a5;--line:#272b37}}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:480px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.sel{position:relative}
+select{appearance:none;-webkit-appearance:none;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:999px;padding:10px 36px 10px 16px;font-size:15px;font-weight:600;font-family:inherit}
+.sel::after{content:"▾";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--mu);pointer-events:none}
+.tot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.box{background:var(--card);border-radius:22px;padding:16px}
+.box small{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:13px;font-weight:600}
+.dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;color:#fff}
+.box b{display:block;margin-top:12px;font-size:22px;font-weight:800;letter-spacing:-.5px}
+.out .dot{background:var(--out)}.out b{color:var(--out)}
+.in .dot{background:var(--in)}.in b{color:var(--in)}
+h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex;justify-content:space-between}
+.day{font-size:13px;color:var(--mu);font-weight:700;margin:16px 4px 8px;text-transform:capitalize}
+.list{background:var(--card);border-radius:22px;overflow:hidden}
+.tx{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line)}
+.tx:last-child{border-bottom:0}
+.ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:var(--bg);flex:none}
+.d{flex:1;min-width:0}
+.d div{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.d span{font-size:12.5px;color:var(--mu)}
+.am{font-weight:700;font-size:15px;white-space:nowrap}
+.SPESA{color:var(--out)}.ENTRATA{color:var(--in)}.RISPARMI{color:var(--sav)}
+.msg{text-align:center;color:var(--mu);padding:40px 0}
+.tx{cursor:pointer}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;border:0;background:var(--sav);color:#fff;font-size:30px;box-shadow:0 6px 18px rgba(74,124,255,.45)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.ov.on{display:flex}
+.sh{background:var(--card);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
+.sh h3{font-size:18px;margin-bottom:14px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg);padding:4px;border-radius:14px;margin-bottom:6px}
+.seg button{border:0;background:none;color:var(--mu);padding:10px;border-radius:11px;font-weight:700;font-size:14px;font-family:inherit}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.sh label{display:block;font-size:12px;color:var(--mu);font-weight:700;margin:10px 2px 6px}
+.sh input,.sh select{width:100%;background:var(--bg);color:var(--tx);border:0;border-radius:14px;padding:13px 14px;font-size:16px;font-family:inherit}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{display:flex;gap:10px;margin-top:18px}
+.act button{flex:1;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:700;font-family:inherit}
+#salva{background:var(--sav);color:#fff}#annulla{background:var(--bg);color:var(--tx)}
+#err{color:var(--out);font-size:13px;margin-top:10px;min-height:1em}
+</style>
+</head>
+<body>
+<header>
+  <h1>Spese</h1>
+  <div class="sel"><select id="mese" aria-label="Mese"></select></div>
+</header>
+<section class="tot">
+  <div class="box out"><small><span class="dot">↑</span>Totale spesa</small><b id="tOut">€ 0,00</b></div>
+  <div class="box in"><small><span class="dot">↓</span>Totale entrata</small><b id="tIn">€ 0,00</b></div>
+</section>
+<h2><span>Transazioni</span><span id="n"></span></h2>
+<div id="lista"><div class="msg">Caricamento…</div></div>
+
+<p style="text-align:center;margin-top:28px;font-size:13px"><a href="#" id="cfgLink" style="color:var(--mu)">Collegamento allo script</a></p>
+<button class="fab" id="fab" aria-label="Aggiungi transazione">+</button>
+<div class="ov" id="ov"><div class="sh">
+  <h3 id="ft">Nuova transazione</h3>
+  <div class="seg" id="seg"><button data-t="SPESA">Spesa</button><button data-t="ENTRATA">Entrata</button><button data-t="RISPARMI">Risparmi</button></div>
+  <div class="row2">
+    <div><label for="fImp">Importo (€)</label><input id="fImp" inputmode="decimal" placeholder="0,00"></div>
+    <div><label for="fData">Data</label><input id="fData" type="date"></div>
+  </div>
+  <label for="fDesc">Descrizione</label><input id="fDesc">
+  <label for="fCat">Categoria</label><select id="fCat"></select>
+  <div id="err"></div>
+  <div class="act"><button id="annulla">Annulla</button><button id="salva">Salva</button></div>
+</div></div>
+
+<div class="ov" id="cfgOv"><div class="sh">
+  <h3>Collega la tua app</h3>
+  <label for="cUrl">URL dello script (finisce con /exec)</label><input id="cUrl" type="url" autocapitalize="off" autocorrect="off">
+  <label for="cKey">Password</label><input id="cKey" type="password" autocapitalize="off" autocorrect="off">
+  <div id="cErr" style="color:var(--out);font-size:13px;margin-top:10px;min-height:1em"></div>
+  <div class="act"><button id="cfgSalva" style="background:var(--sav);color:#fff">Collega</button></div>
+</div></div>
+
+<script>
+// ===== CONFIGURAZIONE =====
+let SCRIPT_URL = ""; // non va scritto qui: lo inserisci al primo avvio e resta solo su questo dispositivo
+let TOKEN = "";      // idem: la password si inserisce al primo avvio
+
+const cfgSaved = (() => { try { return JSON.parse(localStorage.getItem("spese_cfg")||"null"); } catch(e){ return null; } })();
+if(cfgSaved){ SCRIPT_URL = cfgSaved.url; TOKEN = cfgSaved.key; }
+const TIPO_ENTRATA = "ENTRATA"; // come lo scrivi nel foglio: ENTRATA oppure ENTRATE
+const CAT = {
+  SPESA:["Spese Fisse","Ristorante","Uscite","Shopping","Trasporti","Hobby","Casa","Regali","Vacanza","Salute"],
+  ENTRATA:["Stipendio","Regali","Altre Entrate"],
+  RISPARMI:[""]
+};
+const MESI = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const ICONE = {"spese fisse":"📌",ristorante:"🍝",uscite:"🍻",shopping:"🛍️",trasporti:"🚇",hobby:"🎨",casa:"🏠",regali:"🎁",vacanza:"🏖️",salute:"💊",stipendio:"💼","altre entrate":"💰"};
+const eur = n => n.toLocaleString("it-IT",{style:"currency",currency:"EUR"});
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const isIn = t => t.tipo.startsWith("ENTRAT");
+const tipoCls = t => isIn(t) ? "ENTRATA" : t.tipo;
+let dati = [];
+
+function chiave(t){
+  const m = parseInt(t.mese,10);
+  if(!m || !t.anno) return null;
+  return t.anno + "-" + String(m).padStart(2,"0");
+}
+function label(k){
+  const [a,m] = k.split("-");
+  const n = MESI[+m-1];
+  return n.charAt(0).toUpperCase()+n.slice(1)+" "+a;
+}
+
+async function carica(){
+  const url = SCRIPT_URL + (TOKEN ? "?token="+encodeURIComponent(TOKEN) : "");
+  const r = await fetch(url);
+  const j = await r.json();
+  if(!Array.isArray(j)) throw new Error(j.error || "Risposta non valida");
+  dati = j.filter(t=>chiave(t));
+}
+
+function render(){
+  const k = document.getElementById("mese").value;
+  const tx = dati.filter(t=>chiave(t)===k).sort((a,b)=>b.ts.localeCompare(a.ts));
+  const somma = f => tx.filter(f).reduce((s,t)=>s+t.importo,0);
+  document.getElementById("tOut").textContent = eur(somma(t=>t.tipo==="SPESA"));
+  document.getElementById("tIn").textContent = eur(somma(isIn));
+  document.getElementById("n").textContent = tx.length + " voci";
+  const box = document.getElementById("lista");
+  if(!tx.length){ box.innerHTML = '<div class="msg">Nessuna transazione in questo mese</div>'; return; }
+  let html = "", cur = null;
+  for(const t of tx){
+    const g = t.ts.slice(0,10);
+    if(g!==cur){
+      if(cur!==null) html += "</div>";
+      cur = g;
+      const d = new Date(g+"T12:00");
+      html += '<div class="day">'+(isNaN(d)?esc(g):d.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}))+'</div><div class="list">';
+    }
+    const seg = isIn(t) ? "+" : t.tipo==="SPESA" ? "−" : "";
+    html += '<div class="tx" data-id="'+t.id+'"><div class="ic">'+(ICONE[t.categoria.toLowerCase()]||"💳")+'</div>'
+      +'<div class="d"><div>'+esc(t.descrizione||t.categoria)+'</div><span>'+esc(t.categoria)+'</span></div>'
+      +'<div class="am '+tipoCls(t)+'">'+seg+eur(t.importo)+'</div></div>';
+  }
+  box.innerHTML = html + "</div>";
+}
+
+const $ = id => document.getElementById(id);
+
+async function popola(forza){
+  await carica();
+  const mesi = [...new Set(dati.map(chiave))].sort().reverse();
+  const sel = $("mese"), prev = forza || sel.value;
+  sel.innerHTML = mesi.map(m=>'<option value="'+m+'">'+label(m)+'</option>').join("");
+  const now = new Date(), cur = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+  sel.value = mesi.includes(prev) ? prev : (mesi.includes(cur) ? cur : mesi[0]);
+  render();
+}
+
+// ----- aggiunta / modifica -----
+let fTipo = "SPESA", fId = null, fTs = null;
+const oggi = () => new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+
+function setTipo(t, cat){
+  fTipo = t;
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  const sel = $("fCat");
+  sel.innerHTML = (CAT[t]||[]).map(c=>'<option value="'+esc(c)+'">'+(esc(c)||"— nessuna —")+'</option>').join("");
+  if(cat){
+    if(![...sel.options].some(o=>o.value===cat)) sel.insertAdjacentHTML("beforeend",'<option value="'+esc(cat)+'">'+esc(cat)+'</option>');
+    sel.value = cat;
+  }
+}
+function apri(t){
+  fId = t ? t.id : null; fTs = t ? t.ts : null;
+  $("ft").textContent = t ? "Modifica transazione" : "Nuova transazione";
+  setTipo(t ? (isIn(t) ? "ENTRATA" : t.tipo) : "SPESA", t ? t.categoria : "");
+  $("fImp").value = t ? String(t.importo).replace(".",",") : "";
+  $("fDesc").value = t ? t.descrizione : "";
+  $("fData").value = t ? t.ts.slice(0,10) : oggi();
+  $("err").textContent = "";
+  $("ov").classList.add("on");
+}
+async function salva(){
+  const imp = parseFloat($("fImp").value.replace(",","."));
+  if(!(imp>0)) { $("err").textContent = "Inserisci un importo valido"; return; }
+  if(!$("fData").value) { $("err").textContent = "Scegli una data"; return; }
+  const btn = $("salva"); btn.disabled = true; btn.textContent = "Salvo…";
+  try{
+    const r = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({
+      action: fId ? "update" : "add", token: TOKEN, id: fId, ts: fTs,
+      data:{tipo: fTipo==="ENTRATA" ? TIPO_ENTRATA : fTipo, importo: imp, descrizione: $("fDesc").value.trim(), categoria: $("fCat").value, data: $("fData").value}
+    })});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "Errore sconosciuto");
+    $("ov").classList.remove("on");
+    await popola($("fData").value.slice(0,7));
+  }catch(e){ $("err").textContent = "Non salvato: "+e.message; }
+  btn.disabled = false; btn.textContent = "Salva";
+}
+
+$("fab").onclick = () => apri(null);
+$("annulla").onclick = () => $("ov").classList.remove("on");
+$("ov").onclick = e => { if(e.target.id==="ov") $("ov").classList.remove("on"); };
+$("seg").onclick = e => { const b = e.target.closest("button"); if(b) setTipo(b.dataset.t); };
+$("salva").onclick = salva;
+$("mese").onchange = render;
+$("lista").onclick = e => {
+  const r = e.target.closest(".tx"); if(!r) return;
+  const t = dati.find(x=>String(x.id)===r.dataset.id); if(t) apri(t);
+};
+
+function avvia(){
+  if(!SCRIPT_URL){ $("cfgOv").classList.add("on"); return; }
+  popola().catch(e=>{
+    $("lista").innerHTML = '<div class="msg">Impossibile caricare i dati.<br>'+esc(e.message)+'</div>';
+  });
+}
+$("cfgSalva").onclick = () => {
+  const u = $("cUrl").value.trim(), k = $("cKey").value.trim();
+  if(!/^https:\/\/.+\/exec$/.test(u)){ $("cErr").textContent = "L'URL deve iniziare con https:// e finire con /exec"; return; }
+  if(!k){ $("cErr").textContent = "Inserisci la password"; return; }
+  SCRIPT_URL = u; TOKEN = k;
+  try{ localStorage.setItem("spese_cfg", JSON.stringify({url:u,key:k})); }catch(e){}
+  $("cErr").textContent = ""; $("cfgOv").classList.remove("on");
+  avvia();
+};
+$("cfgLink").onclick = e => { e.preventDefault(); $("cUrl").value = SCRIPT_URL; $("cKey").value = TOKEN; $("cfgOv").classList.add("on"); };
+avvia();
+</script>
+</body>
+</html>
