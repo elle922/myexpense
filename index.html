@@ -157,12 +157,26 @@ if(cfgSaved){ SCRIPT_URL = cfgSaved.url; TOKEN = cfgSaved.key; }
 
 const TIPO_ENTRATA = "ENTRATA"; // come lo scrivi nel foglio: ENTRATA oppure ENTRATE
 const CAT = {
-  SPESA:["Spese Fisse","Ristorante","Uscite","Shopping","Trasporti","Hobby","Casa","Regali","Vacanza","Salute"],
+  SPESA:["Spese Fisse","Ristorante","Uscite","Shopping","Trasporti","Hobby","Casa","Regali","Vacanza","Salute","Altre Spese"],
   ENTRATA:["Stipendio","Regali","Altre Entrate"],
   RISPARMI:[""]
 };
 const MESI = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
-const ICONE = {"spese fisse":"📌",ristorante:"🍝",uscite:"🍻",shopping:"🛍️",trasporti:"🚇",hobby:"🎨",casa:"🏠",regali:"🎁",vacanza:"🏖️",salute:"💊",stipendio:"💼","altre entrate":"💰"};
+const ICONE = {
+  "spese fisse":"📌",
+  ristorante:"🍝",
+  uscite:"🍻",
+  shopping:"🛍️",
+  trasporti:"🚇",
+  hobby:"🎨",
+  casa:"🏠",
+  regali:"🎁",
+  vacanza:"🏖️",
+  salute:"💊",
+  "altre spese":"📦",
+  stipendio:"💼",
+  "altre entrate":"💰"
+};
 
 // Colori predominanti per ciascuna categoria (sfondo semitrasparente + contorno/outline colorato)
 const CATEGORIA_COLORI = {
@@ -176,6 +190,7 @@ const CATEGORIA_COLORI = {
   "regali": { bg: "rgba(244, 63, 94, 0.12)", border: "#f43f5e" },
   "vacanza": { bg: "rgba(14, 165, 233, 0.12)", border: "#0ea5e9" },
   "salute": { bg: "rgba(5, 150, 105, 0.12)", border: "#059669" },
+  "altre spese": { bg: "rgba(113, 113, 122, 0.12)", border: "#71717a" },
   "stipendio": { bg: "rgba(42, 157, 111, 0.12)", border: "#2a9d6f" },
   "altre entrate": { bg: "rgba(42, 157, 111, 0.12)", border: "#2a9d6f" }
 };
@@ -187,7 +202,7 @@ function getCatStyle(c) {
 }
 
 // Forzatura emoji a colori con il selettore \uFE0F
-const icona = c => (ICONE[String(c).toLowerCase()]||"💳") + "\uFE0F";
+const icona = c => (ICONE[String(c).toLowerCase().trim()]||"💳") + "\uFE0F";
 
 const $ = id => document.getElementById(id);
 const eur = n => n.toLocaleString("it-IT",{style:"currency",currency:"EUR"});
