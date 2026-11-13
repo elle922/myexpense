@@ -239,7 +239,8 @@ function riga(t, sub){
 }
 function render(){
   const per = dati.filter(t=>t.anno===A && (!M||mn(t)===M));
-  const cats = [...new Set(per.map(t=>t.categoria))].sort();
+  // Mostra fisse tutte le categorie di spesa definite in CAT.SPESA come chip di filtro
+  const cats = CAT.SPESA;
   [...C].forEach(c=>{ if(!cats.includes(c)) C.delete(c); });
   $("chips").innerHTML = cats.map(c=>'<button class="chip'+(C.has(c)?' on':'')+'" data-c="'+esc(c)+'">'+icona(c)+' '+esc(c||"Senza categoria")+'</button>').join("");
   const tx = per.filter(t=>!C.size||C.has(t.categoria)).sort((a,b)=>b.ts.localeCompare(a.ts));
