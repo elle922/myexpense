@@ -36,7 +36,7 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
 .list{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
 .tx{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);cursor:pointer}
 .tx:last-child{border-bottom:0}
-.ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:19px;background:var(--soft);filter:grayscale(1);flex:none}
+.ic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:19px;flex:none}
 .d{flex:1;min-width:0}
 .d div{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .d span{font-size:12.5px;color:var(--mu)}
@@ -163,6 +163,32 @@ const CAT = {
 };
 const MESI = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
 const ICONE = {"spese fisse":"📌",ristorante:"🍝",uscite:"🍻",shopping:"🛍️",trasporti:"🚇",hobby:"🎨",casa:"🏠",regali:"🎁",vacanza:"🏖️",salute:"💊",stipendio:"💼","altre entrate":"💰"};
+
+// Colori predominanti per ciascuna categoria (sfondo semitrasparente + contorno/outline colorato)
+const CATEGORIA_COLORI = {
+  "spese fisse": { bg: "rgba(229, 72, 77, 0.12)", border: "#e5484d" },
+  "ristorante": { bg: "rgba(245, 158, 11, 0.12)", border: "#f59e0b" },
+  "uscite": { bg: "rgba(147, 51, 234, 0.12)", border: "#9333ea" },
+  "shopping": { bg: "rgba(219, 39, 119, 0.12)", border: "#db2777" },
+  "trasporti": { bg: "rgba(2, 132, 199, 0.12)", border: "#0284c7" },
+  "hobby": { bg: "rgba(13, 148, 136, 0.12)", border: "#0d9488" },
+  "casa": { bg: "rgba(79, 70, 229, 0.12)", border: "#4f46e5" },
+  "regali": { bg: "rgba(244, 63, 94, 0.12)", border: "#f43f5e" },
+  "vacanza": { bg: "rgba(14, 165, 233, 0.12)", border: "#0ea5e9" },
+  "salute": { bg: "rgba(5, 150, 105, 0.12)", border: "#059669" },
+  "stipendio": { bg: "rgba(42, 157, 111, 0.12)", border: "#2a9d6f" },
+  "altre entrate": { bg: "rgba(42, 157, 111, 0.12)", border: "#2a9d6f" }
+};
+
+function getCatStyle(c) {
+  const key = String(c || "").toLowerCase().trim();
+  const col = CATEGORIA_COLORI[key] || { bg: "var(--soft)", border: "var(--line)" };
+  return `background:${col.bg};border:1.5px solid ${col.border};`;
+}
+
+// Forzatura emoji a colori con il selettore \uFE0F
+const icona = c => (ICONE[String(c).toLowerCase()]||"💳") + "\uFE0F";
+
 const $ = id => document.getElementById(id);
 const eur = n => n.toLocaleString("it-IT",{style:"currency",currency:"EUR"});
 const eur0 = n => n.toLocaleString("it-IT",{maximumFractionDigits:0});
@@ -173,7 +199,6 @@ const tipoCls = t => isIn(t) ? "ENTRATA" : t.tipo;
 const mn = t => parseInt(t.mese,10);
 const pct = v => (v>=10 ? v.toFixed(0) : v.toFixed(1)).replace(".",",")+"%";
 const sgn = n => (n>0?"+":n<0?"−":"")+eur(Math.abs(n));
-const icona = c => ICONE[String(c).toLowerCase()]||"💳";
 let dati = [], A = 0, M = 0;
 const C = new Set();
 
@@ -195,7 +220,7 @@ function selHome(){
 }
 function riga(t, sub){
   const seg = isIn(t) ? "+" : t.tipo==="SPESA" ? "−" : "";
-  return '<div class="tx" data-id="'+t.id+'"><div class="ic">'+icona(t.categoria)+'</div><div class="d"><div>'+esc(t.descrizione||t.categoria)+'</div><span>'+esc(sub)+'</span></div><div class="am '+tipoCls(t)+'">'+seg+eur(t.importo)+'</div></div>';
+  return '<div class="tx" data-id="'+t.id+'"><div class="ic" style="'+getCatStyle(t.categoria)+'">'+icona(t.categoria)+'</div><div class="d"><div>'+esc(t.descrizione||t.categoria)+'</div><span>'+esc(sub)+'</span></div><div class="am '+tipoCls(t)+'">'+seg+eur(t.importo)+'</div></div>';
 }
 function render(){
   const per = dati.filter(t=>t.anno===A && (!M||mn(t)===M));
@@ -273,7 +298,7 @@ function blocco(titolo, voci, cls){
   h += '<div class="list">';
   for(const v of voci){
     const p = v.v/tot*100;
-    h += '<div class="ri"><div class="ic">'+icona(v.c)+'</div><div class="rb"><div class="rt"><b>'+esc(v.c||"Senza categoria")+'</b><span>'+pct(p)+'</span></div><div class="bar"><i class="'+cls+'" style="width:'+p.toFixed(1)+'%"></i></div><small>'+eur(v.v)+'</small></div></div>';
+    h += '<div class="ri"><div class="ic" style="'+getCatStyle(v.c)+'">'+icona(v.c)+'</div><div class="rb"><div class="rt"><b>'+esc(v.c||"Senza categoria")+'</b><span>'+pct(p)+'</span></div><div class="bar"><i class="'+cls+'" style="width:'+p.toFixed(1)+'%"></i></div><small>'+eur(v.v)+'</small></div></div>';
   }
   return h+'</div>';
 }
@@ -372,7 +397,6 @@ async function salva(){
     if(!j.ok) throw new Error(j.error || "Errore sconosciuto");
     $("ov").classList.remove("on");
     const d = $("fData").value, m = +d.slice(5,7), g = +d.slice(8,10);
-    // stessa regola dello script: dal 26 in poi si va nel mese successivo
     let y = +d.slice(0,4), mm = g>=26 ? m+1 : m; if(mm>12){ mm = 1; y++; }
     await popola(y+"-"+String(mm).padStart(2,"0"));
   }catch(e){ $("err").textContent = "Non salvato: "+e.message; }
