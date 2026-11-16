@@ -120,15 +120,26 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
   <div id="ann"></div>
 </div>
 
+<!-- NUOVA SEZIONE ABBONAMENTI -->
+<div id="pSub" hidden>
+  <header style="display:flex;justify-content:space-between;align-items:center;">
+    <h1>Abbonamenti</h1>
+    <button id="btnNuovoSub" style="background:var(--ac);color:var(--onac);border:0;border-radius:99px;padding:8px 14px;font-weight:600;font-size:13.5px;font-family:inherit;">+ Nuovo</button>
+  </header>
+  <div id="listaSub" style="margin-top:14px"><div class="msg">Caricamento...</div></div>
+</div>
+
 <p style="text-align:center;margin-top:28px;font-size:13px"><a href="#" id="cfgLink" style="color:var(--mu)">Collegamento allo script</a></p>
 
 <nav class="nav">
   <button class="on" data-p="pHome" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>Home</button>
   <button data-p="pRep" aria-label="Report"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Report</button>
   <button data-p="pAnn" aria-label="Annuale"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Annuale</button>
+  <button data-p="pSub" aria-label="Abbonamenti"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>Abbonamenti</button>
 </nav>
 <button class="fab" id="fab" aria-label="Aggiungi transazione"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 
+<!-- MODALE TRANSAZIONE -->
 <div class="ov" id="ov"><div class="sh">
   <h3 id="ft">Nuova transazione</h3>
   <div class="seg" id="seg"><button data-t="SPESA">Spesa</button><button data-t="ENTRATA">Entrata</button><button data-t="RISPARMI">Risparmi</button></div>
@@ -142,6 +153,20 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
   <div class="act"><button id="elimina">Elimina</button><button id="annulla">Annulla</button><button id="salva">Salva</button></div>
 </div></div>
 
+<!-- MODALE NUOVO ABBONAMENTO -->
+<div class="ov" id="ovSub"><div class="sh">
+  <h3>Nuovo Abbonamento</h3>
+  <div class="seg" id="segSub"><button class="on" data-t="SPESA">Spesa</button><button data-t="ENTRATA">Entrata</button></div>
+  <div class="row2">
+    <div><label for="sImp">Importo (€)</label><input id="sImp" inputmode="decimal" placeholder="0,00"></div>
+    <div><label for="sDay">Giorno del mese</label><input id="sDay" type="number" min="1" max="31" value="1"></div>
+  </div>
+  <label for="sDesc">Descrizione (es. Netflix)</label><input id="sDesc">
+  <label for="sCat">Categoria</label><select id="sCat"></select>
+  <div id="sErr" style="color:var(--out);font-size:13px;margin-top:10px;min-height:1em"></div>
+  <div class="act"><button id="sAnnulla" style="background:var(--soft);color:var(--tx)">Annulla</button><button id="sSalva" style="background:var(--ac);color:var(--onac)">Salva</button></div>
+</div></div>
+
 <div class="ov" id="cfgOv"><div class="sh">
   <h3>Collega la tua app</h3>
   <label for="cUrl">URL dello script (finisce con /exec)</label><input id="cUrl" type="url" autocapitalize="off" autocorrect="off">
@@ -151,11 +176,11 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
 </div></div>
 
 <script>
-let SCRIPT_URL = "", TOKEN = "";  // si inseriscono al primo avvio e restano solo su questo dispositivo
+let SCRIPT_URL = "", TOKEN = "";
 const cfgSaved = (() => { try { return JSON.parse(localStorage.getItem("spese_cfg")||"null"); } catch(e){ return null; } })();
 if(cfgSaved){ SCRIPT_URL = cfgSaved.url; TOKEN = cfgSaved.key; }
 
-const TIPO_ENTRATA = "ENTRATA"; // come lo scrivi nel foglio: ENTRATA oppure ENTRATE
+const TIPO_ENTRATA = "ENTRATA";
 const CAT = {
   SPESA:["Spese Fisse","Ristorante","Uscite","Shopping","Trasporti","Hobby","Casa","Regali","Vacanza","Salute","Altre Spese"],
   ENTRATA:["Stipendio","Regali","Altre Entrate"],
@@ -163,22 +188,11 @@ const CAT = {
 };
 const MESI = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
 const ICONE = {
-  "spese fisse":"📌",
-  ristorante:"🍝",
-  uscite:"🍻",
-  shopping:"🛍️",
-  trasporti:"🚇",
-  hobby:"🎨",
-  casa:"🏠",
-  regali:"🎁",
-  vacanza:"🏖️",
-  salute:"💊",
-  "altre spese":"📦",
-  stipendio:"💼",
-  "altre entrate":"💰"
+  "spese fisse":"📌",ristorante:"🍝",uscite:"🍻",shopping:"🛍️",trasporti:"🚇",
+  hobby:"🎨",casa:"🏠",regali:"🎁",vacanza:"🏖️",salute:"💊","altre spese":"📦",
+  stipendio:"💼","altre entrate":"💰"
 };
 
-// Colori predominanti per ciascuna categoria (sfondo semitrasparente + contorno/outline colorato)
 const CATEGORIA_COLORI = {
   "spese fisse": { bg: "rgba(229, 72, 77, 0.12)", border: "#e5484d" },
   "ristorante": { bg: "rgba(245, 158, 11, 0.12)", border: "#f59e0b" },
@@ -201,9 +215,7 @@ function getCatStyle(c) {
   return `background:${col.bg};border:1.5px solid ${col.border};`;
 }
 
-// Forzatura emoji a colori con il selettore \uFE0F
 const icona = c => (ICONE[String(c).toLowerCase().trim()]||"💳") + "\uFE0F";
-
 const $ = id => document.getElementById(id);
 const eur = n => n.toLocaleString("it-IT",{style:"currency",currency:"EUR"});
 const eur0 = n => n.toLocaleString("it-IT",{maximumFractionDigits:0});
@@ -214,7 +226,7 @@ const tipoCls = t => isIn(t) ? "ENTRATA" : t.tipo;
 const mn = t => parseInt(t.mese,10);
 const pct = v => (v>=10 ? v.toFixed(0) : v.toFixed(1)).replace(".",",")+"%";
 const sgn = n => (n>0?"+":n<0?"−":"")+eur(Math.abs(n));
-let dati = [], A = 0, M = 0;
+let dati = [], A = 0, M = 0, abbonamentiList = [];
 const C = new Set();
 
 async function carica(){
@@ -239,7 +251,6 @@ function riga(t, sub){
 }
 function render(){
   const per = dati.filter(t=>t.anno===A && (!M||mn(t)===M));
-  // Mostra fisse tutte le categorie di spesa definite in CAT.SPESA come chip di filtro
   const cats = CAT.SPESA;
   [...C].forEach(c=>{ if(!cats.includes(c)) C.delete(c); });
   $("chips").innerHTML = cats.map(c=>'<button class="chip'+(C.has(c)?' on':'')+'" data-c="'+esc(c)+'">'+icona(c)+' '+esc(c||"Senza categoria")+'</button>').join("");
@@ -288,10 +299,96 @@ async function popola(forza){
     M = dati.some(t=>t.anno===A&&mn(t)===n.getMonth()+1) ? n.getMonth()+1 : 0;
   }
   if(M && !dati.some(t=>t.anno===A&&mn(t)===M)) M = 0;
-  selHome(); render(); popolaReport(); popolaAnnuale();
+  selHome(); render(); popolaReport(); popolaAnnuale(); caricaAbbonamenti();
 }
 
-// ===== REPORT (percentuali per categoria) =====
+// ===== GESTIONE ABBONAMENTI =====
+async function caricaAbbonamenti(){
+  try {
+    const res = await post({action: "get_subs"});
+    if(res.ok) {
+      abbonamentiList = res.subs;
+      renderAbbonamenti();
+    }
+  } catch(e) {}
+}
+
+function renderAbbonamenti(){
+  const box = $("listaSub");
+  if(!abbonamentiList.length){ box.innerHTML = '<div class="msg">Nessun abbonamento configurato</div>'; return; }
+  let html = '<div class="list">';
+  abbonamentiList.forEach(s => {
+    html += `<div class="ri" style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="display:flex;gap:12px;align-items:center;">
+        <div class="ic" style="${getCatStyle(s.categoria)}">${icona(s.categoria)}</div>
+        <div>
+          <div style="font-weight:600;font-size:15px">${esc(s.descrizione)}</div>
+          <small>Giorno ${s.giorno} di ogni mese • ${esc(s.categoria||"Senza categoria")}</small>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="${s.tipo}">${(s.tipo==="ENTRATA"?"+":"−")+eur(s.importo)}</span>
+        <button onclick="eliminaSub(${s.id})" style="border:0;background:rgba(239,75,95,.14);color:var(--out);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;">Elimina</button>
+      </div>
+    </div>`;
+  });
+  box.innerHTML = html + '</div>';
+}
+
+let subTipo = "SPESA";
+function setSubTipo(t){
+  subTipo = t;
+  document.querySelectorAll("#segSub button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  const sel = $("sCat");
+  const arr = CAT[t] || CAT.SPESA;
+  sel.innerHTML = arr.map(c=>'<option value="'+esc(c)+'">'+(esc(c)||"— nessuna —")+'</option>').join("");
+}
+
+$("btnNuovoSub").onclick = () => {
+  setSubTipo("SPESA");
+  $("sImp").value = "";
+  $("sDesc").value = "";
+  $("sDay").value = "1";
+  $("sErr").textContent = "";
+  $("ovSub").classList.add("on");
+};
+$("sAnnulla").onclick = () => $("ovSub").classList.remove("on");
+$("ovSub").onclick = e => { if(e.target.id==="ovSub") $("ovSub").classList.remove("on"); };
+$("segSub").onclick = e => { const b = e.target.closest("button"); if(b) setSubTipo(b.dataset.t); };
+
+$("sSalva").onclick = async () => {
+  const imp = parseFloat($("sImp").value.replace(",","."));
+  const desc = $("sDesc").value.trim();
+  const day = parseInt($("sDay").value, 10);
+  if(!(imp>0)){ $("sErr").textContent = "Inserisci un importo valido"; return; }
+  if(!desc){ $("sErr").textContent = "Inserisci una descrizione"; return; }
+  if(!(day >= 1 && day <= 31)){ $("sErr").textContent = "Giorno non valido (1-31)"; return; }
+
+  const btn = $("sSalva"); btn.disabled = true; btn.textContent = "Salvo…";
+  try {
+    const res = await post({action: "add_sub", data: {tipo: subTipo, importo: imp, descrizione: desc, categoria: $("sCat").value, giorno: day}});
+    if(!res.ok) throw new Error(res.error);
+    $("ovSub").classList.remove("on");
+    await caricaAbbonamenti();
+    await popola();
+  } catch(e) {
+    $("sErr").textContent = "Errore: "+e.message;
+  }
+  btn.disabled = false; btn.textContent = "Salva";
+};
+
+window.eliminaSub = async (id) => {
+  if(!confirm("Eliminare questo abbonamento ricorrente?")) return;
+  try {
+    const res = await post({action: "delete_sub", id: id});
+    if(res.ok) {
+      await caricaAbbonamenti();
+      await popola();
+    }
+  } catch(e) { alert("Errore di eliminazione"); }
+};
+
+// ===== REPORT =====
 let repInit = false;
 const aggrCat = (tx,f) => {
   const o = {};
@@ -324,7 +421,7 @@ function rendiReport(){
   $("rep").innerHTML = blocco("Spese per categoria", aggrCat(tx,t=>t.tipo==="SPESA"), "o") + blocco("Entrate per categoria", aggrCat(tx,isIn), "g");
 }
 
-// ===== ANNUALE (pivot + grafico) =====
+// ===== ANNUALE =====
 function popolaAnnuale(){
   const anni = [...new Set(dati.map(t=>t.anno))].sort((a,b)=>b-a);
   const s = $("aAnno"), p = s.value;
@@ -377,7 +474,7 @@ function rendiAnnuale(){
     + '<h2><span>Andamento mensile</span></h2>' + grafico(en,sp) + tab;
 }
 
-// ===== FORM: aggiunta / modifica / elimina =====
+// ===== FORM TRANSAZIONE =====
 let fTipo = "SPESA", fId = null, fTs = null;
 const oggi = () => new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 function setTipo(t, cat){
@@ -430,7 +527,7 @@ $("elimina").onclick = async () => {
   btn.disabled = false; btn.textContent = "Elimina";
 };
 
-// ===== eventi =====
+// ===== EVENTI NAVIGAZIONE E FILTRI =====
 $("fab").onclick = () => apri(null);
 $("annulla").onclick = () => $("ov").classList.remove("on");
 $("ov").onclick = e => { if(e.target.id==="ov") $("ov").classList.remove("on"); };
@@ -443,12 +540,14 @@ $("lista").onclick = e => { const r = e.target.closest(".tx"); if(!r) return; co
 $("rAnno").onchange = rendiReport;
 $("rMese").onchange = rendiReport;
 $("aAnno").onchange = rendiAnnuale;
+
 document.querySelectorAll(".nav button").forEach(b => b.onclick = () => {
   document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("on", x===b));
-  ["pHome","pRep","pAnn"].forEach(id=>{ $(id).hidden = id!==b.dataset.p; });
+  ["pHome","pRep","pAnn","pSub"].forEach(id=>{ $(id).hidden = id!==b.dataset.p; });
   $("fab").style.display = b.dataset.p==="pHome" ? "" : "none";
   if(b.dataset.p==="pRep") popolaReport();
   if(b.dataset.p==="pAnn") popolaAnnuale();
+  if(b.dataset.p==="pSub") caricaAbbonamenti();
   window.scrollTo(0,0);
 });
 
