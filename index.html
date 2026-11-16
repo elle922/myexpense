@@ -86,6 +86,8 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
 #salva{background:var(--ac);color:var(--onac)}#annulla{background:var(--soft);color:var(--tx)}
 #elimina{background:rgba(239,75,95,.14);color:var(--out);display:none}
 #err{color:var(--out);font-size:13px;margin-top:10px;min-height:1em}
+.badge-freq{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--soft);color:var(--tx);margin-right:4px}
+.badge-end{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:rgba(239,75,95,.12);color:var(--out);margin-top:4px}
 </style>
 </head>
 <body>
@@ -120,13 +122,17 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
   <div id="ann"></div>
 </div>
 
-<!-- NUOVA SEZIONE ABBONAMENTI -->
+<!-- SEZIONE RICORRENTI -->
 <div id="pSub" hidden>
   <header style="display:flex;justify-content:space-between;align-items:center;">
-    <h1>Abbonamenti</h1>
-    <button id="btnNuovoSub" style="background:var(--ac);color:var(--onac);border:0;border-radius:99px;padding:8px 14px;font-weight:600;font-size:13.5px;font-family:inherit;">+ Nuovo</button>
+    <h1>Ricorrenti</h1>
+    <button id="btnNuovoSub" style="background:var(--ac);color:var(--onac);border:0;border-radius:99px;padding:8px 14px;font-weight:600;font-size:13.5px;font-family:inherit;cursor:pointer;">+ Nuovo</button>
   </header>
-  <div id="listaSub" style="margin-top:14px"><div class="msg">Caricamento...</div></div>
+  <section class="tot" style="grid-template-columns:1fr;margin-bottom:18px;">
+    <div class="box out"><small>Impatto mensile stimato (uscite attive)</small><b id="tSubOut">€ 0,00</b></div>
+  </section>
+  <h2><span>Pagamenti futuri e rate</span><span id="nSub"></span></h2>
+  <div id="listaSub"><div class="msg">Caricamento...</div></div>
 </div>
 
 <p style="text-align:center;margin-top:28px;font-size:13px"><a href="#" id="cfgLink" style="color:var(--mu)">Collegamento allo script</a></p>
@@ -135,7 +141,7 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
   <button class="on" data-p="pHome" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>Home</button>
   <button data-p="pRep" aria-label="Report"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Report</button>
   <button data-p="pAnn" aria-label="Annuale"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Annuale</button>
-  <button data-p="pSub" aria-label="Abbonamenti"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>Abbonamenti</button>
+  <button data-p="pSub" aria-label="Ricorrenti"><svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Ricorrenti</button>
 </nav>
 <button class="fab" id="fab" aria-label="Aggiungi transazione"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 
@@ -153,16 +159,27 @@ h2{font-size:15px;color:var(--mu);font-weight:700;margin:0 4px 10px;display:flex
   <div class="act"><button id="elimina">Elimina</button><button id="annulla">Annulla</button><button id="salva">Salva</button></div>
 </div></div>
 
-<!-- MODALE NUOVO ABBONAMENTO -->
+<!-- MODALE NUOVA RICORRENTE -->
 <div class="ov" id="ovSub"><div class="sh">
-  <h3>Nuovo Abbonamento</h3>
-  <div class="seg" id="segSub"><button class="on" data-t="SPESA">Spesa</button><button data-t="ENTRATA">Entrata</button></div>
-  <div class="row2">
-    <div><label for="sImp">Importo (€)</label><input id="sImp" inputmode="decimal" placeholder="0,00"></div>
-    <div><label for="sDay">Giorno del mese</label><input id="sDay" type="number" min="1" max="31" value="1"></div>
+  <h3>Nuovo pagamento ricorrente</h3>
+  <div class="seg" id="segSub" style="grid-template-columns:1fr 1fr"><button class="on" data-t="SPESA">Spesa</button><button data-t="ENTRATA">Entrata</button></div>
+  
+  <label>Frequenza</label>
+  <div class="seg" id="segFreq">
+    <button data-f="SETTIMANALE">Settimanale</button>
+    <button class="on" data-f="MENSILE">Mensile</button>
+    <button data-f="ANNUALE">Annuale</button>
   </div>
-  <label for="sDesc">Descrizione (es. Netflix)</label><input id="sDesc">
-  <label for="sCat">Categoria</label><select id="sCat"></select>
+
+  <div class="row2">
+    <div><label for="sImp">Importo rata (€)</label><input id="sImp" inputmode="decimal" placeholder="0,00"></div>
+    <div><label for="sData">Prossimo addebito</label><input id="sData" type="date"></div>
+  </div>
+  <div class="row2">
+    <div><label for="sCat">Categoria</label><select id="sCat"></select></div>
+    <div><label for="sEnd">Data fine (opzionale)</label><input id="sEnd" type="date"></div>
+  </div>
+  <label for="sDesc">Descrizione (es. Carta di credito, Rata auto, Netflix)</label><input id="sDesc">
   <div id="sErr" style="color:var(--out);font-size:13px;margin-top:10px;min-height:1em"></div>
   <div class="act"><button id="sAnnulla" style="background:var(--soft);color:var(--tx)">Annulla</button><button id="sSalva" style="background:var(--ac);color:var(--onac)">Salva</button></div>
 </div></div>
@@ -229,8 +246,25 @@ const sgn = n => (n>0?"+":n<0?"−":"")+eur(Math.abs(n));
 let dati = [], A = 0, M = 0, abbonamentiList = [];
 const C = new Set();
 
+async function post(body) {
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(Object.assign({ token: TOKEN }, body))
+    });
+    return await r.json();
+  } catch (e) {
+    const msg = String(e && e.message || e);
+    if (/load failed|failed to fetch|networkerror/i.test(msg)) {
+      return { ok: true, assumed: true };
+    }
+    throw e;
+  }
+}
+
 async function carica(){
-  const url = SCRIPT_URL + (TOKEN ? "?token="+encodeURIComponent(TOKEN) : "");
+  const url = SCRIPT_URL + (TOKEN ? "?token="+encodeURIComponent(TOKEN) : "") + "&_t=" + Date.now();
   const j = await (await fetch(url)).json();
   if(!Array.isArray(j)) throw new Error(j.error || "Risposta non valida");
   dati = j.filter(t=>mn(t)>0 && t.anno);
@@ -302,40 +336,102 @@ async function popola(forza){
   selHome(); render(); popolaReport(); popolaAnnuale(); caricaAbbonamenti();
 }
 
-// ===== GESTIONE ABBONAMENTI =====
+// ===== GESTIONE RICORRENTI =====
 async function caricaAbbonamenti(){
   try {
     const res = await post({action: "get_subs"});
-    if(res.ok) {
+    if(res.ok && Array.isArray(res.subs)) {
       abbonamentiList = res.subs;
       renderAbbonamenti();
     }
   } catch(e) {}
 }
 
-function renderAbbonamenti(){
-  const box = $("listaSub");
-  if(!abbonamentiList.length){ box.innerHTML = '<div class="msg">Nessun abbonamento configurato</div>'; return; }
-  let html = '<div class="list">';
-  abbonamentiList.forEach(s => {
-    html += `<div class="ri" style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="display:flex;gap:12px;align-items:center;">
-        <div class="ic" style="${getCatStyle(s.categoria)}">${icona(s.categoria)}</div>
-        <div>
-          <div style="font-weight:600;font-size:15px">${esc(s.descrizione)}</div>
-          <small>Giorno ${s.giorno} di ogni mese • ${esc(s.categoria||"Senza categoria")}</small>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="${s.tipo}">${(s.tipo==="ENTRATA"?"+":"−")+eur(s.importo)}</span>
-        <button onclick="eliminaSub(${s.id})" style="border:0;background:rgba(239,75,95,.14);color:var(--out);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;">Elimina</button>
-      </div>
-    </div>`;
-  });
-  box.innerHTML = html + '</div>';
+function labelFreq(f) {
+  if(f === "SETTIMANALE") return "Settimanale";
+  if(f === "ANNUALE") return "Annuale";
+  return "Mensile";
 }
 
-let subTipo = "SPESA";
+function formatDataBreve(ymd) {
+  if(!ymd) return "";
+  const d = new Date(ymd + "T12:00");
+  return isNaN(d) ? ymd : d.toLocaleDateString("it-IT", {day:"numeric", month:"short", year:"numeric"});
+}
+
+// Calcola quante rate mancano tra prossimaData e dataFine
+function calcolaRateRimanenti(nextYmd, endYmd, freq) {
+  if(!nextYmd || !endYmd || nextYmd > endYmd) return 0;
+  let cur = new Date(nextYmd + "T12:00");
+  const end = new Date(endYmd + "T12:00");
+  const anchor = cur.getDate();
+  let count = 0;
+  while(cur <= end && count < 500) {
+    count++;
+    if(freq === "SETTIMANALE") cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate() + 7);
+    else if(freq === "ANNUALE") {
+      const ny = cur.getFullYear() + 1, md = new Date(ny, cur.getMonth() + 1, 0).getDate();
+      cur = new Date(ny, cur.getMonth(), Math.min(anchor, md));
+    } else {
+      const nm = cur.getMonth() + 1, ty = cur.getFullYear() + Math.floor(nm/12), tm = nm % 12;
+      const md = new Date(ty, tm + 1, 0).getDate();
+      cur = new Date(ty, tm, Math.min(anchor, md));
+    }
+  }
+  return count;
+}
+
+function renderAbbonamenti(){
+  const box = $("listaSub");
+  const attivi = abbonamentiList.filter(s => !s.concluso);
+  const conclusi = abbonamentiList.filter(s => s.concluso);
+
+  const totOut = attivi.filter(s=>s.tipo==="SPESA").reduce((acc,s)=>{
+    if(s.frequenza === "SETTIMANALE") return acc + (s.importo * 4.333);
+    if(s.frequenza === "ANNUALE") return acc + (s.importo / 12);
+    return acc + s.importo;
+  }, 0);
+  $("tSubOut").textContent = eur(totOut);
+  $("nSub").textContent = attivi.length + (attivi.length===1 ? " attivo" : " attivi");
+
+  if(!abbonamentiList.length){ box.innerHTML = '<div class="msg">Nessun pagamento ricorrente configurato</div>'; return; }
+
+  const renderCard = (s) => {
+    const rateRim = s.dataFine && !s.concluso ? calcolaRateRimanenti(s.prossimaData, s.dataFine, s.frequenza) : 0;
+    const fineBadge = s.dataFine
+      ? (s.concluso
+          ? `<div class="badge-end" style="background:var(--soft);color:var(--mu);">Piano concluso il ${formatDataBreve(s.dataFine)}</div>`
+          : `<div class="badge-end">Fine: ${formatDataBreve(s.dataFine)} (${rateRim} ${rateRim===1?'rata':'rate'} • ${eur(rateRim * s.importo)})</div>`)
+      : "";
+
+    return `<div class="ri" style="display:flex;justify-content:space-between;align-items:center;${s.concluso?'opacity:.6;':''}">
+      <div style="display:flex;gap:12px;align-items:center;min-width:0;padding-right:8px;">
+        <div class="ic" style="${getCatStyle(s.categoria)}">${icona(s.categoria)}</div>
+        <div style="min-width:0;">
+          <div style="font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(s.descrizione)}</div>
+          <small style="display:block;margin-top:2px;"><span class="badge-freq">${labelFreq(s.frequenza)}</span> ${s.concluso ? 'Terminato' : 'Prossimo: <b>' + formatDataBreve(s.prossimaData) + '</b>'}</small>
+          ${fineBadge}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none;">
+        <span class="${s.tipo}" style="font-weight:700;font-size:15px;">${(s.tipo==="ENTRATA"?"+":"−")+eur(s.importo)}</span>
+        <button onclick="eliminaSub(${s.id})" style="border:0;background:rgba(239,75,95,.14);color:var(--out);border-radius:8px;padding:5px 9px;font-size:11.5px;font-weight:700;cursor:pointer;">Elimina</button>
+      </div>
+    </div>`;
+  };
+
+  let html = "";
+  if(attivi.length) {
+    html += '<div class="list">' + attivi.sort((a,b)=>a.prossimaData.localeCompare(b.prossimaData)).map(renderCard).join("") + '</div>';
+  }
+  if(conclusi.length) {
+    html += '<h2 style="margin-top:22px;"><span>Conclusi</span><span>'+conclusi.length+'</span></h2>';
+    html += '<div class="list">' + conclusi.map(renderCard).join("") + '</div>';
+  }
+  box.innerHTML = html;
+}
+
+let subTipo = "SPESA", subFreq = "MENSILE";
 function setSubTipo(t){
   subTipo = t;
   document.querySelectorAll("#segSub button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
@@ -343,34 +439,46 @@ function setSubTipo(t){
   const arr = CAT[t] || CAT.SPESA;
   sel.innerHTML = arr.map(c=>'<option value="'+esc(c)+'">'+(esc(c)||"— nessuna —")+'</option>').join("");
 }
+function setSubFreq(f){
+  subFreq = f;
+  document.querySelectorAll("#segFreq button").forEach(b=>b.classList.toggle("on", b.dataset.f===f));
+}
 
 $("btnNuovoSub").onclick = () => {
   setSubTipo("SPESA");
+  setSubFreq("MENSILE");
   $("sImp").value = "";
   $("sDesc").value = "";
-  $("sDay").value = "1";
+  $("sData").value = oggi();
+  $("sEnd").value = "";
   $("sErr").textContent = "";
   $("ovSub").classList.add("on");
 };
 $("sAnnulla").onclick = () => $("ovSub").classList.remove("on");
 $("ovSub").onclick = e => { if(e.target.id==="ovSub") $("ovSub").classList.remove("on"); };
 $("segSub").onclick = e => { const b = e.target.closest("button"); if(b) setSubTipo(b.dataset.t); };
+$("segFreq").onclick = e => { const b = e.target.closest("button"); if(b) setSubFreq(b.dataset.f); };
 
 $("sSalva").onclick = async () => {
   const imp = parseFloat($("sImp").value.replace(",","."));
   const desc = $("sDesc").value.trim();
-  const day = parseInt($("sDay").value, 10);
+  const dataAddebito = $("sData").value;
+  const dataFine = $("sEnd").value;
   if(!(imp>0)){ $("sErr").textContent = "Inserisci un importo valido"; return; }
   if(!desc){ $("sErr").textContent = "Inserisci una descrizione"; return; }
-  if(!(day >= 1 && day <= 31)){ $("sErr").textContent = "Giorno non valido (1-31)"; return; }
+  if(!dataAddebito){ $("sErr").textContent = "Seleziona la data di addebito"; return; }
+  if(dataFine && dataFine < dataAddebito){ $("sErr").textContent = "La data fine non può essere precedente al primo addebito"; return; }
 
   const btn = $("sSalva"); btn.disabled = true; btn.textContent = "Salvo…";
   try {
-    const res = await post({action: "add_sub", data: {tipo: subTipo, importo: imp, descrizione: desc, categoria: $("sCat").value, giorno: day}});
+    const res = await post({
+      action: "add_sub",
+      data: { tipo: subTipo, importo: imp, descrizione: desc, categoria: $("sCat").value, frequenza: subFreq, prossimaData: dataAddebito, dataFine: dataFine }
+    });
     if(!res.ok) throw new Error(res.error);
     $("ovSub").classList.remove("on");
-    await caricaAbbonamenti();
-    await popola();
+    if(res.assumed) await new Promise(r => setTimeout(r, 900));
+    location.reload();
   } catch(e) {
     $("sErr").textContent = "Errore: "+e.message;
   }
@@ -378,12 +486,12 @@ $("sSalva").onclick = async () => {
 };
 
 window.eliminaSub = async (id) => {
-  if(!confirm("Eliminare questo abbonamento ricorrente?")) return;
+  if(!confirm("Eliminare questo pagamento ricorrente?")) return;
   try {
     const res = await post({action: "delete_sub", id: id});
     if(res.ok) {
-      await caricaAbbonamenti();
-      await popola();
+      if(res.assumed) await new Promise(r => setTimeout(r, 800));
+      location.reload();
     }
   } catch(e) { alert("Errore di eliminazione"); }
 };
@@ -498,7 +606,7 @@ function apri(t){
   $("elimina").style.display = t ? "block" : "none";
   $("ov").classList.add("on");
 }
-const post = body => fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({token:TOKEN},body))}).then(r=>r.json());
+
 async function salva(){
   const imp = parseFloat($("fImp").value.replace(",","."));
   if(!(imp>0)){ $("err").textContent = "Inserisci un importo valido"; return; }
@@ -509,9 +617,8 @@ async function salva(){
       data:{tipo: fTipo==="ENTRATA"?TIPO_ENTRATA:fTipo, importo:imp, descrizione:$("fDesc").value.trim(), categoria:$("fCat").value, data:$("fData").value}});
     if(!j.ok) throw new Error(j.error || "Errore sconosciuto");
     $("ov").classList.remove("on");
-    const d = $("fData").value, m = +d.slice(5,7), g = +d.slice(8,10);
-    let y = +d.slice(0,4), mm = g>=26 ? m+1 : m; if(mm>12){ mm = 1; y++; }
-    await popola(y+"-"+String(mm).padStart(2,"0"));
+    if(j.assumed) await new Promise(r => setTimeout(r, 900));
+    location.reload();
   }catch(e){ $("err").textContent = "Non salvato: "+e.message; }
   btn.disabled = false; btn.textContent = "Salva";
 }
@@ -522,7 +629,8 @@ $("elimina").onclick = async () => {
     const j = await post({action:"delete", id:fId, ts:fTs});
     if(!j.ok) throw new Error(j.error || "Errore sconosciuto");
     $("ov").classList.remove("on");
-    await popola();
+    if(j.assumed) await new Promise(r => setTimeout(r, 900));
+    location.reload();
   }catch(e){ $("err").textContent = "Non eliminato: "+e.message; }
   btn.disabled = false; btn.textContent = "Elimina";
 };
